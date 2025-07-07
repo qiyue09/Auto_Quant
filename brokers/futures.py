@@ -54,12 +54,12 @@ class Futures(Broker):
         else:
             # count is None
             # Assume that both start_time and end_time have been specified.
-            from_time = start_time.timestamp()
-            to_time = end_time.timestamp()
+            # from_time = start_time.timestamp()
+            # to_time = end_time.timestamp()
 
             # try to get data
-            response = self.api.instrument.candles(
-                instrument, granularity=granularity, fromTime=from_time, toTime=to_time
+            response = self.api.instrument.candlesOfTime(
+                instrument, granularity=granularity, fromTime=start_time, toTime=end_time
             )
 
             data = self.response_to_df(response, count, granularity, cut_yesterday)
@@ -172,6 +172,13 @@ class Futures(Broker):
                 raise ValueError("Invalid direction")
 
         return positions_dict
+
+    def get_positionInfo(self, instrument: str):
+
+        positions_informations = self.get_positions(instrument)
+        if len(positions_informations) > 2:
+            raise ValueError("Wrong position information!")
+        return positions_informations
 
     def clear_positions(self, instrument: str):
 

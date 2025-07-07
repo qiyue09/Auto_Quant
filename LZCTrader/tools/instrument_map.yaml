@@ -5,7 +5,28 @@ rb:
   stop:
     - [14, 57]
     - [22, 57]
+au:
+  exchange: 'SHFE'
+  morning: True
+  night: True
+  stop:
+    - [14, 57]
+    - [22, 57]
+fu:
+  exchange: 'SHFE'
+  morning: True
+  night: True
+  stop:
+    - [14, 57]
+    - [22, 57]
 ao:
+  exchange: 'SHFE'
+  morning: True
+  night: True
+  stop:
+    - [14, 57]
+    - [22, 57]
+hc:
   exchange: 'SHFE'
   morning: True
   night: True
@@ -14,33 +35,66 @@ ao:
     - [22, 57]
 ag:
   exchange: 'SHFE'
-  morning: False
+  morning: True
   night: True
   stop:
     - [2, 57]
+
+ps:
+  exchange: 'GFEX'
+  morning: True
+  night: True
+  stop:
+    - [2, 57]
+    - [22, 57]
+
 ur:
   exchange: 'CZCE'
   morning: True
   night: False
   stop:
     - [14, 57]
-jd:
+jm:
   exchange: 'DCE'
   morning: True
-  night: False
+  night: True
   stop:
     - [14, 57]
-ap:
-  exchange: 'CZCE'
+    - [22, 57]
+m:
+  exchange: 'DCE'
   morning: True
-  night: False
+  night: True
   stop:
     - [14, 57]
-cj:
-  exchange: 'CZCE'
+    - [22, 57]
+v:
+  exchange: 'DCE'
   morning: True
-  night: False
+  night: True
   stop:
     - [14, 57]
+    - [22, 57]
+fg:
+  exchange: 'ZCE' #郑商所目前还不支持
+  morning: True
+  night: True
+  stop:
+    - [14, 57]
+    - [22, 57]
+sa:
+  exchange: 'ZCE'
+  morning: True
+  night: Ture
+  stop:
+    - [14, 57]
+    - [22, 57]
+ps:
+  exchange: 'GFEX'
+  morning: True
+  night: Ture
+  stop:
+    - [14, 57]
+    - [22, 57]
 
 

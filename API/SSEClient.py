@@ -239,7 +239,47 @@ class SSEClient:
         data = {
             "symbol": symbol,
             "candleNums": candlenums,
+            "period": period
+        }
+
+        try:
+            resp = self.syn_session.post(
+                url,
+                json=data,
+                headers={
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'license': self.license_key
+                },
+                timeout=10
+            )
+
+            result = resp.json()
+            if result.get('code') == 0:
+                return result.get('data')
+            else:
+                print(f"获取数据失败: {result.get('message')}")
+                return None
+        except Exception as e:
+            print(f"获取数据请求出错: {e}")
+            return None
+
+    def get_data_of_time(self, symbol, period, start_time, end_time):
+        """
+        期货下单（同步）
+        """
+        if not self.is_ready:
+            print("离线模式数据")
+        else:
+            pass
+            # print("在线模式数据")
+
+        url = f"{self.real_base_url}/apollo-market/api/v1/futureData/queryData"
+        data = {
+            "symbol": symbol,
             "period": period,
+            "startTime": start_time,
+            "endTime": end_time
         }
 
         try:

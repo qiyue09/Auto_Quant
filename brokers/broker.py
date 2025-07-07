@@ -30,3 +30,9 @@ class Broker(ABC):
     def get_position(self, instrument: str) -> dict:
         return {}
 
+    @abstractmethod
+    def get_positionInfo(self, instrument: str) -> dict:
+        return {}
+
+
+

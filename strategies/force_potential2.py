@@ -58,7 +58,7 @@ class potential_force(Strategy):
         # count：取k线的数目；
         # cut_yesterday：取的数据中，当同时包含今日数据和昨日数据时，是否去掉昨日数据。True表示去掉；
         data = data[::-1]  # 取到的数据中，按时间由近到远排序。再此翻转为由远到近，便于某些策略处理
-        if len(data) < 101:
+        if data is None or len(data) < 101:
             print("数据不足!")
             return None
 
@@ -70,8 +70,8 @@ class potential_force(Strategy):
             df_feat = pd.concat([df.reset_index(drop=True), features], axis=1)
             df_feat['target'] = np.sign(df_feat['Close'].diff().shift(-1))  # 明日涨跌
 
-            X = df_feat[['force']].iloc[:-1]
-            y = df_feat['target'].iloc[:-1]
+            X = df_feat[['force']].iloc[:-3]
+            y = df_feat['target'].iloc[:-3]
             self.model.fit(X, y)
         self.counter += 1
         # 用最新数据做预测

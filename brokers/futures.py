@@ -176,7 +176,7 @@ class Futures(Broker):
     def get_positionInfo(self, instrument: str):
 
         positions_informations = self.get_positions(instrument)
-        if len(positions_informations) > 2:
+        if positions_informations is not None and len(positions_informations) > 2:
             raise ValueError("Wrong position information!")
         return positions_informations
 

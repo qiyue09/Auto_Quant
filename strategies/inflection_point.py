@@ -130,14 +130,14 @@ class INFLECTION(Strategy):
 
         # print(f"{self.instrument} position", position_dict["long_tdPosition"], position_dict["long_ydPosition"], position_dict["short_tdPosition"], position_dict["short_ydPosition"]) # 仓位查询
         temp = self.broker.get_candles(self.instrument, granularity="1s", count=1)
-        self.current_point = temp.iloc[0]['Close']  # 取最近一根秒级k线，作为当前价格
+        current_point = temp.iloc[0]['Close']  # 取最近一根秒级k线，作为当前价格
         print(f'{self.instrument}{position}')
         if not position:
 
             if signal == 1:
                 print(f'做空{self.instrument}')
                 self.broker.relog()  # 由于一段时间不登录，交易所可能会自动下线，所以每次下单前先登录
-                duo_enter_point = self.current_point + self.trade_offset  # 下单价。为保证立刻成交，在此取买三、卖三报单，按照价格优先原则，会按当前价成交。取买几、卖几可自定义。
+                duo_enter_point = current_point + self.trade_offset  # 下单价。为保证立刻成交，在此取买三、卖三报单，按照价格优先原则，会按当前价成交。取买几、卖几可自定义。
                 new_order = Order(
                     instrument=self.instrument,
                     exchange=self.exchange,
@@ -148,13 +148,13 @@ class INFLECTION(Strategy):
                     stopPrice=0,  # 未实现功能。设为0即可
                     orderPriceType=1  # 类型：限价单（现在限价单和市价单由报单价决定。以开多仓为例，报单价比当前价高，则立即成交，相当于市价单。报单价比当前价低，则需等价格跌到此价才成交，相当于现价单）
                 )
-                self.point = self.current_point
+                self.point = current_point
                 new_orders.append(new_order)
                 self.write_order(instrument=self.instrument, type=1, point=self.point, profit=0)  # 记录下单结果
             if signal == -1:
                 print(f'做多{self.instrument}')
                 self.broker.relog()
-                kong_enter_point = self.current_point - self.trade_offset
+                kong_enter_point = current_point - self.trade_offset
                 new_order = Order(
                     instrument=self.instrument,
                     exchange=self.exchange,
@@ -166,7 +166,7 @@ class INFLECTION(Strategy):
                     orderPriceType=1
                 )
                 new_orders.append(new_order)
-                self.point = self.current_point
+                self.point = current_point
                 self.write_order(instrument=self.instrument, type=2, point=self.point, profit=0)
         elif position.get("long_tdPosition", 0) > 0:
             profit = position['positionProfit']/position['openPrice']
@@ -174,7 +174,7 @@ class INFLECTION(Strategy):
             if signal == -1:
                 print(f'平多仓{self.instrument},profit:{profit},singal:{signal}')
                 self.broker.relog()
-                kong_enter_point = self.current_point - self.trade_offset
+                kong_enter_point = current_point - self.trade_offset
                 new_order = Order(
                     instrument=self.instrument,
                     exchange=self.exchange,
@@ -198,8 +198,8 @@ class INFLECTION(Strategy):
                 )
                 new_orders.append(new_order)
                 new_orders.append(new_order1)
-                self.write_order(instrument=self.instrument, type=3, point=self.current_point, profit=profit)
-                self.write_order(instrument=self.instrument, type=2, point=self.current_point, profit=profit)
+                self.write_order(instrument=self.instrument, type=3, point=current_point, profit=profit)
+                self.write_order(instrument=self.instrument, type=2, point=current_point, profit=profit)
 
         elif position.get("short_tdPosition", 0) > 0:
             profit = position['positionProfit'] / position['openPrice']
@@ -207,7 +207,7 @@ class INFLECTION(Strategy):
             if signal == 1:
                 print(f'平空仓{self.instrument}, profit:{profit}, singal:{signal}')
                 self.broker.relog()
-                long_enter_point = self.current_point + self.trade_offset
+                long_enter_point = current_point + self.trade_offset
                 new_order = Order(
                     instrument=self.instrument,
                     exchange=self.exchange,
@@ -232,8 +232,8 @@ class INFLECTION(Strategy):
                 new_orders.append(new_order)
                 new_orders.append(new_order1)
 
-                self.write_order(instrument=self.instrument, type=4, point=self.current_point, profit=profit)
-                self.write_order(instrument=self.instrument, type=1, point=self.current_point, profit=profit)
+                self.write_order(instrument=self.instrument, type=4, point=current_point, profit=profit)
+                self.write_order(instrument=self.instrument, type=1, point=current_point, profit=profit)
         return new_orders
 
 

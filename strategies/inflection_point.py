@@ -26,7 +26,7 @@ class INFLECTION(Strategy):
         self.broker = broker  # 功能接口
 
         # 自定义：
-        self.trade_num = 10  # 交易手数
+        self.trade_num = 1  # 交易手数
         self.trade_offset = 3  # 取买几卖几
         self.lock = threading.Lock()  # 线程锁
 

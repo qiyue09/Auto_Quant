@@ -1,7 +1,7 @@
 import threading
 import pandas as pd
 from finta import TA
-from datetime import datetime
+from datetime import datetime, timedelta
 from LZCTrader.strategy import Strategy
 from brokers.broker import Broker
 from LZCTrader.order import Order
@@ -69,7 +69,9 @@ class INFLECTION(Strategy):
         # 此为函数主体，根据指标进行计算，产生交易信号并下单，程序只会调用这一个函数进行不断循环。必需
 
         new_orders = []
-        start = "2025-07-08 09:00:00"  # 2024-06-01 09:00:00
+
+        start_time = datetime.now() - timedelta(days=4)
+        start = start_time.strftime("%Y-%m-%d") + " 09:00:00"
         end = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         data = self.broker.get_candles(self.instrument, granularity="1min", start_time=start, end_time=end, cut_yesterday=False)  # 取行情数据函数示例
         # granularity：时间粒度，支持1s，5s，1min，1h等；
@@ -109,7 +111,7 @@ class INFLECTION(Strategy):
 
         # 仓位判断
         position_dicts = self.broker.get_positionInfo(self.instrument)
-        print(position_dicts)
+
 
         position = {}
         if position_dicts is not None:
@@ -124,7 +126,7 @@ class INFLECTION(Strategy):
                     position["short_ydPosition"] = position_dict["ydPosition"]
                     position["openPrice"] = position_dict["openPrice"]
                     position["positionProfit"] = position_dict["positionProfit"]
-        print(data.tail(5).to_string())
+
 
         # print(f"{self.instrument} position", position_dict["long_tdPosition"], position_dict["long_ydPosition"], position_dict["short_tdPosition"], position_dict["short_ydPosition"]) # 仓位查询
         temp = self.broker.get_candles(self.instrument, granularity="1s", count=1)

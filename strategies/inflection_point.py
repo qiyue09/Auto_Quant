@@ -181,6 +181,7 @@ class INFLECTION(Strategy):
                 self.point = current_point
                 self.write_order(instrument=self.instrument, type=2, point=self.point, profit=0)
         elif position.get("long_tdPosition", 0) > 0:
+            profit = position['positionProfit'] / position['openPrice']
 
             if signal == -1:
                 print(f'平多仓{self.instrument},profit:{profit},singal:{signal}')
@@ -213,6 +214,7 @@ class INFLECTION(Strategy):
                 self.write_order(instrument=self.instrument, type=2, point=current_point, profit=profit)
 
         elif position.get("short_tdPosition", 0) > 0:
+            profit = position['positionProfit'] / position['openPrice']
 
             if signal == 1:
                 print(f'平空仓{self.instrument}, profit:{profit}, singal:{signal}')

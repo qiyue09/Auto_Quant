@@ -136,7 +136,7 @@ class INFLECTION(Strategy):
 
         # 输出监测
         dt = datetime.now()
-        if dt.minute % 5 == 0 and dt.second == 0:
+        if dt.minute % 5 == 0:
             print(dt)
             print(data.tail(6).to_string())
             print(f'{self.instrument}{position}')

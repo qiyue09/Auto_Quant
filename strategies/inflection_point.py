@@ -78,7 +78,7 @@ class INFLECTION(Strategy):
         # count：取k线的数目；
         # cut_yesterday：取的数据中，当同时包含今日数据和昨日数据时，是否去掉昨日数据。True表示去掉；
 
-        # 取到的数据中，按时间由近到远排序。再此翻转为由远到近，便于某些策略处理
+        # 取到的数据中，按时间由远到近排序。
         #更新最新价格数据
 
 
@@ -137,6 +137,7 @@ class INFLECTION(Strategy):
         # 输出监测
         dt = datetime.now()
         if dt.minute % 5 == 0 and dt.second == 0:
+            print(dt)
             print(data.tail(6).to_string())
             print(f'{self.instrument}{position}')
             profit = position['positionProfit'] / position['openPrice']

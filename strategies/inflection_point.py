@@ -184,7 +184,7 @@ class INFLECTION(Strategy):
             profit = position['positionProfit'] / position['openPrice']
 
             if signal == -1:
-                print(f'平多仓{self.instrument},profit:{profit},singal:{signal}')
+                print(f'平多仓{self.instrument},profit:{profit},singal:{signal},{current_point}')
                 self.broker.relog()
                 kong_enter_point = current_point - self.trade_offset
                 new_order = Order(
@@ -217,7 +217,7 @@ class INFLECTION(Strategy):
             profit = position['positionProfit'] / position['openPrice']
 
             if signal == 1:
-                print(f'平空仓{self.instrument}, profit:{profit}, singal:{signal}')
+                print(f'平空仓{self.instrument}, profit:{profit}, singal:{signal},{current_point}')
                 self.broker.relog()
                 long_enter_point = current_point + self.trade_offset
                 new_order = Order(

@@ -116,7 +116,7 @@ class INFLECTION(Strategy):
 
 
         position = {}
-        if position_dicts is not None:
+        if position_dicts:
             for position_dict in position_dicts:
                 if position_dict["direction"] == 2:
                     position["long_tdPosition"] = position_dict["tdPosition"]
@@ -136,19 +136,21 @@ class INFLECTION(Strategy):
 
         # 输出监测
         dt = datetime.now()
-        if dt.minute % 5 == 0:
+        if dt.minute % 3 == 0:
             print(dt)
             print(data.tail(6).to_string())
             print(f'{self.instrument}{position}')
-            profit = position['positionProfit'] / position['openPrice']
-            print(f'{self.instrument}:{profit}')
+            if position:
+                profit = position['positionProfit'] / position['openPrice']
+                print(f'{self.instrument}:{profit}')
 
         if not position:
 
             if signal == 1:
-                print(f'做空{self.instrument},{current_point}')
+
                 self.broker.relog()  # 由于一段时间不登录，交易所可能会自动下线，所以每次下单前先登录
                 duo_enter_point = current_point + self.trade_offset  # 下单价。为保证立刻成交，在此取买三、卖三报单，按照价格优先原则，会按当前价成交。取买几、卖几可自定义。
+                print(f'做多{self.instrument},{duo_enter_point}')
                 new_order = Order(
                     instrument=self.instrument,
                     exchange=self.exchange,
@@ -164,9 +166,10 @@ class INFLECTION(Strategy):
                 new_orders.append(new_order)
                 self.write_order(instrument=self.instrument, type=1, point=self.point, profit=0)  # 记录下单结果
             if signal == -1:
-                print(f'做多{self.instrument},{current_point}')
+
                 self.broker.relog()
                 kong_enter_point = current_point - self.trade_offset
+                print(f'做多{self.instrument},{kong_enter_point}')
                 new_order = Order(
                     instrument=self.instrument,
                     exchange=self.exchange,

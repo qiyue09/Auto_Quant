@@ -1,8 +1,8 @@
-rb:
-  exchange: 'SHFE'
-  morning: True
-  night: True
-  stop:
+rb: #品种名称 大小写与交易所官网统一
+  exchange: 'SHFE' #交易所代号 上交所：SHFE 郑商所：CZCE 大商所：DCE
+  morning: True #早盘是否进行交易
+  night: True #夜盘是否进行交易
+  stop: #设置强制平仓时间点
     - [14, 57]
     - [22, 57]
 au:
@@ -75,15 +75,22 @@ v:
   stop:
     - [14, 57]
     - [22, 57]
-fg:
-  exchange: 'ZCE' #郑商所目前还不支持
+FG:
+  exchange: 'CZCE' 
   morning: True
   night: True
   stop:
     - [14, 57]
     - [22, 57]
-sa:
-  exchange: 'ZCE'
+SA:
+  exchange: 'CZCE'
+  morning: True
+  night: Ture
+  stop:
+    - [14, 57]
+    - [22, 57]
+TA:
+  exchange: 'CZCE'
   morning: True
   night: Ture
   stop:

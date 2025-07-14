@@ -5,7 +5,7 @@ INTERVAL: '1min' #interval:策略（generate_signal函数）多久运行一次
 PARAMETERS: #策略中所需参数
   ema_period: 10
 
-WATCHLIST: ['ao2509'] # 交易品种
+WATCHLIST: ['SA509'] # 交易品种
 
 
 

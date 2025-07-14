@@ -9,7 +9,7 @@ PARAMETERS: #策略中所需参数
   fast_ema: 21
   RR: 2.0
 
-WATCHLIST: ['hc2510', 'fu2509', 'rb2510', 'ao2509', 'jm2509'] # 交易品种
+WATCHLIST: ['hc2510', 'fu2509', 'rb2510', 'ao2509', 'SA509', 'FG509', 'TA509'] # 交易品种
 
 
 

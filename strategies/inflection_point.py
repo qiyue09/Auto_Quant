@@ -35,6 +35,9 @@ class INFLECTION(Strategy):
         self.counter = 100
         # 模型设置
 
+        # 订单设置
+
+
 
     def generate_features(self, data: pd.DataFrame):
         # 在此函数中，根据传入参数data，计算出你策略所需的MA，EMA等指标，非必需
@@ -111,6 +114,10 @@ class INFLECTION(Strategy):
 
 
 
+
+
+
+
         # 仓位判断
         position_dicts = self.broker.get_positionInfo(self.instrument)
 
@@ -134,6 +141,62 @@ class INFLECTION(Strategy):
         temp = self.broker.get_candles(self.instrument, granularity="1s", count=1)
         current_point = temp.iloc[0]['Close']  # 取最近一根秒级k线，作为当前价格
 
+        price_thre = 0
+        if current_point >= data['smooth'].iloc[-1]:
+            price_thre = 1
+        elif current_point <= data['smooth'].iloc[-1]:
+            price_thre = -1
+
+        # 订单设置
+        duo_enter_point = current_point + self.trade_offset  # 下单价。为保证立刻成交，在此取买三、卖三报单，按照价格优先原则，会按当前价成交。取买几、卖几可自定义。
+        kong_enter_point = current_point - self.trade_offset
+
+        buy_order = Order(
+            instrument=self.instrument,
+            exchange=self.exchange,
+            direction=2,  # 2为买，3为卖
+            offset=1,  # 1为开仓，4为平今，5为平昨
+            price=duo_enter_point,  # 下单价
+            volume=self.trade_num,  # 下单手数
+            stopPrice=0,  # 未实现功能。设为0即可
+            orderPriceType=1  # 类型：限价单（现在限价单和市价单由报单价决定。以开多仓为例，报单价比当前价高，则立即成交，相当于市价单。报单价比当前价低，则需等价格跌到此价才成交，相当于现价单）
+        )
+        sell_order = Order(
+            instrument=self.instrument,
+            exchange=self.exchange,
+            direction=3,
+            offset=1,
+            price=kong_enter_point,
+            volume=self.trade_num,
+            stopPrice=0,
+            orderPriceType=1
+        )
+        if position_dicts:
+            if position.get("long_tdPosition", 0) > 0:
+                close_buy_order = Order(
+                            instrument=self.instrument,
+                            exchange=self.exchange,
+                            direction=3,
+                            offset=4,
+                            price=kong_enter_point,
+                            volume=position["long_tdPosition"],
+                            stopPrice=0,
+                            orderPriceType=1
+                        )
+            if position.get("short_tdPosition", 0) > 0:
+                close_sell_order = Order(
+                            instrument=self.instrument,
+                            exchange=self.exchange,
+                            direction=2,
+                            offset=4,
+                            price=duo_enter_point,
+                            volume=position["short_tdPosition"],
+                            stopPrice=0,
+                            orderPriceType=1
+                        )
+
+
+
         # 输出监测
         dt = datetime.now()
         if dt.minute % 3 == 0:
@@ -149,103 +212,54 @@ class INFLECTION(Strategy):
             if signal == 1:
 
                 self.broker.relog()  # 由于一段时间不登录，交易所可能会自动下线，所以每次下单前先登录
-                duo_enter_point = current_point + self.trade_offset  # 下单价。为保证立刻成交，在此取买三、卖三报单，按照价格优先原则，会按当前价成交。取买几、卖几可自定义。
                 print(f'做多{self.instrument},{duo_enter_point}')
-                new_order = Order(
-                    instrument=self.instrument,
-                    exchange=self.exchange,
-                    direction=2,  # 2为买，3为卖
-                    offset=1,  # 1为开仓，4为平今，5为平昨
-                    price=duo_enter_point,  # 下单价
-                    volume=self.trade_num,  # 下单手数
-                    stopPrice=0,  # 未实现功能。设为0即可
-                    orderPriceType=1  # 类型：限价单（现在限价单和市价单由报单价决定。以开多仓为例，报单价比当前价高，则立即成交，相当于市价单。报单价比当前价低，则需等价格跌到此价才成交，相当于现价单）
-                )
+
                 self.point = current_point
 
-                new_orders.append(new_order)
+                new_orders.append(buy_order)
                 self.write_order(instrument=self.instrument, type=1, point=self.point, profit=0)  # 记录下单结果
             if signal == -1:
 
                 self.broker.relog()
-                kong_enter_point = current_point - self.trade_offset
                 print(f'做多{self.instrument},{kong_enter_point}')
-                new_order = Order(
-                    instrument=self.instrument,
-                    exchange=self.exchange,
-                    direction=3,
-                    offset=1,
-                    price=kong_enter_point,
-                    volume=self.trade_num,
-                    stopPrice=0,
-                    orderPriceType=1
-                )
-                new_orders.append(new_order)
+
+                new_orders.append(sell_order)
                 self.point = current_point
                 self.write_order(instrument=self.instrument, type=2, point=self.point, profit=0)
-        elif position.get("long_tdPosition", 0) > 0:
+        elif position.get("long_tdPosition", 0) > 0: # 持有多单
             profit = position['positionProfit'] / position['openPrice']
 
-            if signal == -1:
-                print(f'平多仓{self.instrument},profit:{profit},singal:{signal},{current_point}')
+            if position['positionProfit'] < 0 and price_thre == -1:
                 self.broker.relog()
-                kong_enter_point = current_point - self.trade_offset
-                new_order = Order(
-                    instrument=self.instrument,
-                    exchange=self.exchange,
-                    direction=3,
-                    offset=4,
-                    price=kong_enter_point,
-                    volume=position["long_tdPosition"],
-                    stopPrice=0,
-                    orderPriceType=1
-                )
-                new_order1 = Order(
-                    instrument=self.instrument,
-                    exchange=self.exchange,
-                    direction=3,  # 2为买，3为卖
-                    offset=1,  # 1为开仓，4为平今，5为平昨
-                    price=kong_enter_point,  # 下单价
-                    volume=self.trade_num,  # 下单手数
-                    stopPrice=0,  # 未实现功能。设为0即可
-                    orderPriceType=1
-                    # 类型：限价单（现在限价单和市价单由报单价决定。以开多仓为例，报单价比当前价高，则立即成交，相当于市价单。报单价比当前价低，则需等价格跌到此价才成交，相当于现价单）
-                )
-                new_orders.append(new_order)
-                new_orders.append(new_order1)
+                print(f'平多仓{self.instrument},profit:{profit},singal:{signal},{current_point}')
+                new_orders.append(close_buy_order)
+                self.write_order(instrument=self.instrument, type=3, point=current_point, profit=profit)
+
+
+            if signal == -1:
+                self.broker.relog()
+                new_orders.append(close_buy_order)
+                new_orders.append(sell_order)
                 self.write_order(instrument=self.instrument, type=3, point=current_point, profit=profit)
                 self.write_order(instrument=self.instrument, type=2, point=current_point, profit=profit)
 
-        elif position.get("short_tdPosition", 0) > 0:
+
+        elif position.get("short_tdPosition", 0) > 0: # 持有空单
             profit = position['positionProfit'] / position['openPrice']
+            if position['positionProfit'] < 0 and price_thre == 1:
+                print(f'平空仓{self.instrument}, profit:{profit}, singal:{signal},{current_point}')
+
+                self.broker.relog()
+
+                new_orders.append(close_sell_order)
+                self.write_order(instrument=self.instrument, type=4, point=current_point, profit=profit)
 
             if signal == 1:
                 print(f'平空仓{self.instrument}, profit:{profit}, singal:{signal},{current_point}')
                 self.broker.relog()
-                long_enter_point = current_point + self.trade_offset
-                new_order = Order(
-                    instrument=self.instrument,
-                    exchange=self.exchange,
-                    direction=2,
-                    offset=4,
-                    price=long_enter_point,
-                    volume=position["short_tdPosition"],
-                    stopPrice=0,
-                    orderPriceType=1
-                )
-                new_order1 = Order(
-                    instrument=self.instrument,
-                    exchange=self.exchange,
-                    direction=2,  # 2为买，3为卖
-                    offset=1,  # 1为开仓，4为平今，5为平昨
-                    price=long_enter_point,  # 下单价
-                    volume=self.trade_num,  # 下单手数
-                    stopPrice=0,  # 未实现功能。设为0即可
-                    orderPriceType=1
-                    # 类型：限价单（现在限价单和市价单由报单价决定。以开多仓为例，报单价比当前价高，则立即成交，相当于市价单。报单价比当前价低，则需等价格跌到此价才成交，相当于现价单）
-                )
-                new_orders.append(new_order)
-                new_orders.append(new_order1)
+
+                new_orders.append(close_sell_order)
+                new_orders.append(sell_order)
 
                 self.write_order(instrument=self.instrument, type=4, point=current_point, profit=profit)
                 self.write_order(instrument=self.instrument, type=1, point=current_point, profit=profit)

@@ -1,0 +1,18 @@
+CLASS: 'INFLECTION' # 必须和策略文件中的类名严格一致
+
+INTERVAL: '15s' #interval:策略（generate_signal函数）多久运行一次
+
+PARAMETERS: #策略中所需参数
+  lookback: 5
+  sma_period: 30
+  period: 25 #平滑周期
+  m: 2.5 #乘数2.5
+  slow_ema: 50
+  fast_ema: 21
+  RR: 2.0
+
+WATCHLIST: ['rb2510', 'ao2509'] # 交易品种1
+
+
+
+

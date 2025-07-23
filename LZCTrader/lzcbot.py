@@ -67,6 +67,7 @@ class LZCBot:
                     self.submit_order(
                         order=order
                     )
+                    time.sleep(0.5)
                 except Exception as e:
                     print(f"AutoTrader exception when submitting order: {e}")
 

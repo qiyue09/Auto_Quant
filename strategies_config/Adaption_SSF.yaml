@@ -11,7 +11,8 @@ PARAMETERS: #策略中所需参数
   fast_ema: 21
   RR: 2.0
 
-WATCHLIST: ['rb2510', 'ao2509'] # 交易品种1
+WATCHLIST: ['rb2510'] # 交易品种1
+
 
 
 

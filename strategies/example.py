@@ -43,9 +43,9 @@ class Example(Strategy):
         start = "2025-06-27 09:00:00"  # 2024-06-01 09:00:00
         end = "2025-07-03 10:57:46"
         print(end)
-        data = self.broker.get_candles(self.instrument, granularity="1min", start_time=start, end_time=end) # 取行情数据函数示例
+        data = self.broker.get_candles(self.instrument, granularity="1min", count=100) # 取行情数据函数示例
         path = f'{self.instrument}.csv'
-        data = data[::-1]
+
         data.to_csv(path, index=True, index_label='datetime', encoding="utf-8-sig")
         print(f'{self.instrument}chenggong')
 

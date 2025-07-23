@@ -27,7 +27,7 @@ class INFLECTION(Strategy):
 
         # 自定义：
         self.trade_num = 1  # 交易手数
-        self.trade_offset = 3  # 取买几卖几
+        self.trade_offset = 1  # 取买几卖几
         self.lock = threading.Lock()  # 线程锁
 
 
@@ -76,7 +76,7 @@ class INFLECTION(Strategy):
         start_time = datetime.now() - timedelta(days=4)
         start = start_time.strftime("%Y-%m-%d") + " 09:00:00"
         end = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        data = self.broker.get_candles(self.instrument, granularity="1min", start_time=start, end_time=end, cut_yesterday=False)  # 取行情数据函数示例
+        data = self.broker.get_candles(self.instrument, granularity="1min", count=self.counter)  # 取行情数据函数示例
         # granularity：时间粒度，支持1s，5s，1min，1h等；
         # count：取k线的数目；
         # cut_yesterday：取的数据中，当同时包含今日数据和昨日数据时，是否去掉昨日数据。True表示去掉；
@@ -84,11 +84,11 @@ class INFLECTION(Strategy):
         # 取到的数据中，按时间由远到近排序。
         #更新最新价格数据
 
-
+        self.counter = self.counter+1
 
         if data is None or len(data) < 99:
             print("数据不足!")
-            return None
+            return new_orders
 
 
 
@@ -198,9 +198,9 @@ class INFLECTION(Strategy):
 
 
         # 输出监测
-        dt = datetime.now()
-        if dt.minute % 3 == 0:
-            print(dt)
+        t = datetime.now()
+        if t.minute % 3 == 0:
+            print(t)
             print(data.tail(6).to_string())
             print(f'{self.instrument}{position}')
             if position:
@@ -221,7 +221,7 @@ class INFLECTION(Strategy):
             if signal == -1:
 
                 self.broker.relog()
-                print(f'做多{self.instrument},{kong_enter_point}')
+                print(f'做空{self.instrument},{kong_enter_point}')
 
                 new_orders.append(sell_order)
                 self.point = current_point
@@ -259,10 +259,11 @@ class INFLECTION(Strategy):
                 self.broker.relog()
 
                 new_orders.append(close_sell_order)
-                new_orders.append(sell_order)
+                new_orders.append(buy_order)
 
                 self.write_order(instrument=self.instrument, type=4, point=current_point, profit=profit)
                 self.write_order(instrument=self.instrument, type=1, point=current_point, profit=profit)
+
         return new_orders
 
 

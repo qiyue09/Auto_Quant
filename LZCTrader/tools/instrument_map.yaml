@@ -12,6 +12,7 @@ au:
   stop:
     - [14, 57]
     - [22, 57]
+
 fu:
   exchange: 'SHFE'
   morning: True
@@ -24,7 +25,7 @@ ao:
   morning: True
   night: True
   stop:
-    - [14, 57]
+    - [14, 56]
     - [22, 57]
 hc:
   exchange: 'SHFE'
@@ -38,6 +39,7 @@ ag:
   morning: True
   night: True
   stop:
+    - [14, 57]
     - [2, 57]
 
 ps:
@@ -76,7 +78,14 @@ v:
     - [14, 57]
     - [22, 57]
 FG:
-  exchange: 'CZCE' 
+  exchange: 'CZCE'
+  morning: True
+  night: True
+  stop:
+    - [14, 57]
+    - [22, 57]
+MA:
+  exchange: 'CZCE'
   morning: True
   night: True
   stop:

@@ -11,6 +11,7 @@ class Order:
         volume: int = None,
         stopPrice: int = None,
         orderPriceType: int = None,
+        timeCondition: int = None,
     ):
         """Create a new order.
 
@@ -33,3 +34,4 @@ class Order:
         self.volume = volume
         self.stopPrice = stopPrice
         self.orderPriceType = orderPriceType
+        self.timeCondition = timeCondition

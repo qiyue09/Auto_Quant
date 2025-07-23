@@ -18,7 +18,8 @@ class EntitySpec(object):
             price=new_order.price,
             volume=new_order.volume,
             stopPrice=new_order.stopPrice,
-            orderPriceType=new_order.orderPriceType
+            orderPriceType=new_order.orderPriceType,
+            timeCondition=new_order.timeCondition
         )
 
         return response

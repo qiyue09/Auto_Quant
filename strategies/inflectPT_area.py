@@ -200,8 +200,7 @@ class INFLECTION(Strategy):
                             price=kong_enter_point,
                             volume=position["long_tdPosition"],
                             stopPrice=0,
-                            orderPriceType=1
-                        )
+                            orderPriceType=1                        )
             if position.get("short_tdPosition", 0) > 0:
                 close_sell_order = Order(
                             instrument=self.instrument,
@@ -211,8 +210,7 @@ class INFLECTION(Strategy):
                             price=duo_enter_point,
                             volume=position["short_tdPosition"],
                             stopPrice=0,
-                            orderPriceType=1
-                        )
+                            orderPriceType=1                        )
 
         # 输出监测
         t = datetime.now()

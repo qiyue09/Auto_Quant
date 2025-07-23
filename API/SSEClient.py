@@ -179,7 +179,7 @@ class SSEClient:
             print(f"登录请求出错: {e}")
             return False
 
-    def send_order(self, symbol, exchange, direction, offset, price, volume, stopPrice, orderPriceType):
+    def send_order(self, symbol, exchange, direction, offset, price, volume, stopPrice, orderPriceType, timeCondition):
         """
         期货下单（同步）
         """
@@ -198,7 +198,8 @@ class SSEClient:
             "price": price,
             "volume": volume,
             "stopPrice": stopPrice,
-            "orderPriceType": orderPriceType
+            "orderPriceType": orderPriceType,
+            "timeCondition": timeCondition
         }
 
         try:

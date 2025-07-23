@@ -34,6 +34,7 @@ class EntitySpec(object):
             start_time=start_time,
             end_time=end_time
         )
+
         return response
 
     def positions(self, instrument, **kwargs):

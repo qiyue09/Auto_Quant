@@ -27,7 +27,7 @@ class INFLECTION(Strategy):
 
         # 自定义：
         self.trade_num = 1  # 交易手数
-        self.trade_offset = 3  # 取买几卖几
+        self.trade_offset = 5  # 取买几卖几
         self.lock = threading.Lock()  # 线程锁
 
 
@@ -178,7 +178,8 @@ class INFLECTION(Strategy):
             price=duo_enter_point,  # 下单价
             volume=self.trade_num,  # 下单手数
             stopPrice=0,  # 未实现功能。设为0即可
-            orderPriceType=1  # 类型：限价单（现在限价单和市价单由报单价决定。以开多仓为例，报单价比当前价高，则立即成交，相当于市价单。报单价比当前价低，则需等价格跌到此价才成交，相当于现价单）
+            orderPriceType=1,  # 类型：限价单（现在限价单和市价单由报单价决定。以开多仓为例，报单价比当前价高，则立即成交，相当于市价单。报单价比当前价低，则需等价格跌到此价才成交，相当于现价单）
+            timeCondition=1
         )
         sell_order = Order(
             instrument=self.instrument,
@@ -188,7 +189,8 @@ class INFLECTION(Strategy):
             price=kong_enter_point,
             volume=self.trade_num,
             stopPrice=0,
-            orderPriceType=1
+            orderPriceType=1,
+            timeCondition=1
         )
         if position_dicts:
             if position.get("long_tdPosition", 0) > 0:
@@ -200,7 +202,8 @@ class INFLECTION(Strategy):
                             price=kong_enter_point,
                             volume=position["long_tdPosition"],
                             stopPrice=0,
-                            orderPriceType=1
+                            orderPriceType=1,
+                            timeCondition=1
                         )
             if position.get("short_tdPosition", 0) > 0:
                 close_sell_order = Order(
@@ -211,7 +214,8 @@ class INFLECTION(Strategy):
                             price=duo_enter_point,
                             volume=position["short_tdPosition"],
                             stopPrice=0,
-                            orderPriceType=1
+                            orderPriceType=1,
+                            timeCondition=1
                         )
 
         # 输出监测

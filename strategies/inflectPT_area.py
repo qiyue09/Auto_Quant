@@ -82,7 +82,7 @@ class INFLECTION(Strategy):
         start_time = datetime.now() - timedelta(days=4)
         start = start_time.strftime("%Y-%m-%d") + " 09:00:00"
         end = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        data = self.broker.get_candles(self.instrument, granularity="1min", count=self.counter)  # 取行情数据函数示例
+        data = self.broker.get_candles(self.instrument, granularity="1min", start_time=start, end_time=end)  # 取行情数据函数示例
         # granularity：时间粒度，支持1s，5s，1min，1h等；
         # count：取k线的数目；
         # cut_yesterday：取的数据中，当同时包含今日数据和昨日数据时，是否去掉昨日数据。True表示去掉；
@@ -90,7 +90,6 @@ class INFLECTION(Strategy):
         # 取到的数据中，按时间由远到近排序。
         #更新最新价格数据
 
-        self.counter = self.counter+1
 
         if data is None or len(data) < 99:
             print("数据不足!")
